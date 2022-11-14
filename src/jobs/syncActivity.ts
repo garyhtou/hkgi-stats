@@ -15,8 +15,8 @@ export default async function syncActivity(): Promise<IActivity[]> {
 	// Upload only new activities to Firebase Firestore
 	const batch = db.batch();
 	const activityRef = db.collection('activity');
-	const snapshot = await activityRef.get();
-	const existingIds = snapshot.docs.map((doc) => doc.id);
+	const snapshot = await activityRef.select('id').get();
+	const existingIds = snapshot.docs.map((doc) => doc.data().id) as TId[];
 	const newActivities = activities.filter((a) => !existingIds.includes(a.id));
 	newActivities.forEach((a) => {
 		const docRef = activityRef.doc(a.id);
