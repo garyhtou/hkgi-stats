@@ -2,7 +2,7 @@ import fetchActivity, { IRawActivity } from '../helpers/fetchActivity';
 import getId, { TId } from '../helpers/getId';
 import { db } from '../utils/firebase';
 
-export const INTERVAL = 1000 * 2.4; // every 2.4 minutes
+export const INTERVAL = 1000 * 60 * 2.4; // every 2.4 minutes
 
 export default async function syncActivity(): Promise<IActivity[]> {
 	console.log('Syncing activity...');
