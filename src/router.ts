@@ -1,4 +1,6 @@
 import express, { Router, Request, Response } from 'express';
+import getActivity from './helpers/getActivity';
+import syncActivity from './jobs/syncActivity';
 
 const router: Router = express.Router();
 
@@ -11,20 +13,15 @@ router.get('/ping', (req: Request, res: Response) => {
 	res.send('pong! 🏓');
 });
 
-router.get('/', (req: Request, res: Response) => {
-	const response = {
-		message:
-			'Hello World! Welcome to the Express Typescript Simple Boilerplate.',
-		boilerplate: {
-			repository:
-				'https://github.com/garyhtou/express-typescript-simple-boilerplate',
-			author: {
-				name: 'Gary Tou',
-				website: 'https://garytou.com',
-			},
-		},
-	};
-	res.json(response);
+router.get('/', async (req: Request, res: Response) => {
+	const activity = await getActivity();
+	res.json(activity);
+});
+
+router.get('/sync', async (req: Request, res: Response) => {
+	console.log('Request to sync activity');
+	const activity = await syncActivity();
+	res.json(activity);
 });
 
 export default router;

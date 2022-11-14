@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config(); // Load envrionment variables from .env file
 
+import './jobs/jobs'; // Run jobs
+
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
