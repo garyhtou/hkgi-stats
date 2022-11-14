@@ -10,7 +10,7 @@ const PARAMS: { [k: string]: { default: any; clean: Function } } = {
 		default: 100,
 		clean: (x?: string) => {
 			const v = parseInt(x);
-			return isNaN(v) ? PARAMS.limit.default : v;
+			return isNaN(v) && v > 0 && v <= 500 ? PARAMS.limit.default : v;
 		},
 	},
 	order: {
