@@ -8,4 +8,5 @@ ENV NODE_ENV production
 ENV GIT_COMMIT_SHA=${CAPROVER_GIT_COMMIT_SHA}
 ENV PORT 80
 EXPOSE 80
+RUN npm run build
 CMD [ "node", "./dist/index.js" ]
