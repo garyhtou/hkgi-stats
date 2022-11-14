@@ -5,14 +5,47 @@ var cachedActivities: IActivity[] = [];
 const cacheTtl = 1000 * 60 * 10; // 10 minute
 var lastCachedAt = 0;
 
-export default async function getActivity(): Promise<IActivity[]> {
+const PARAMS: { [k: string]: { default: any; clean: Function } } = {
+	limit: {
+		default: 100,
+		clean: (x?: string) => {
+			const v = parseInt(x);
+			return isNaN(v) ? PARAMS.limit.default : v;
+		},
+	},
+	order: {
+		default: 'desc',
+		clean: (x?: string) => {
+			const v = x?.toLowerCase()?.trim();
+			return ['asc', 'desc'].includes(v) ? v : PARAMS.order.default;
+		},
+	},
+};
+
+export default async function getActivity(
+	limit: number | string,
+	order: string
+): Promise<IActivity[]> {
+	const orderArg = PARAMS.order.clean(order);
+	const limitArg = PARAMS.limit.clean(limit);
+
+	// Return cached activities if cache is not stale
 	if (cachedActivities.length && Date.now() - lastCachedAt < cacheTtl) {
 		console.log('Returning cached activities');
-		return cachedActivities;
+		return cachedActivities
+			.sort((a, b) => {
+				if (orderArg === 'asc') return a.ts - b.ts;
+				return b.ts - a.ts;
+			})
+			.slice(0, limitArg);
 	}
 
 	// Get activities from Firebase Firestore
-	const snapshot = await db.collection('activity').orderBy('ts', 'desc').get();
+	const snapshot = await db
+		.collection('activity')
+		.orderBy('ts', orderArg)
+		.limit(limitArg)
+		.get();
 	const activities = snapshot.docs.map((doc) => doc.data()) as IActivity[];
 	lastCachedAt = Date.now();
 	return activities;
@@ -29,3 +62,10 @@ db.collection('activity').onSnapshot((snapshot) => {
 	cachedActivities = activities;
 	lastCachedAt = Date.now();
 });
+
+export function cleanParam(param: string, arg: string) {
+	const { default: def, clean: validate } = PARAMS[param];
+	const value = validate(arg) ? arg : def;
+	if (!validate(value)) throw new Error(`Invalid ${param} parameter: ${arg}`);
+	return value;
+}

@@ -14,7 +14,9 @@ router.get('/ping', (req: Request, res: Response) => {
 });
 
 router.get('/activity', async (req: Request, res: Response) => {
-	const activity = await getActivity();
+	const order = req.query.order?.toString();
+	const limit = req.query.limit?.toString();
+	const activity = await getActivity(limit, order);
 	res.json(activity);
 });
 
