@@ -13,12 +13,12 @@ router.get('/ping', (req: Request, res: Response) => {
 	res.send('pong! 🏓');
 });
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/activity', async (req: Request, res: Response) => {
 	const activity = await getActivity();
 	res.json(activity);
 });
 
-router.get('/sync', async (req: Request, res: Response) => {
+router.get('/activity/sync', async (req: Request, res: Response) => {
 	console.log('Request to sync activity');
 	const activity = await syncActivity();
 	res.json(activity);
